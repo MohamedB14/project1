@@ -306,23 +306,23 @@ glimpse(college)</code></pre>
 ## $ `2013`               &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 ## $ `2014`               &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 ## $ `2015`               &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
-<pre class="r"><code>college_long &lt;- college_wide %&gt;% pivot_longer(cols=starts_with(&#39;20&#39;), names_to=&quot;year&quot;,values_to=&quot;score&quot;) %&gt;% glimpse()</code></pre>
-<pre><code>## Rows: 8,796
+<pre class="r"><code>college_long &lt;- college_wide %&gt;% pivot_longer(cols=starts_with(&#39;20&#39;), names_to=&quot;year&quot;,values_to=&quot;score&quot;, values_drop_na=TRUE) %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 2,200
 ## Columns: 14
-## $ world_rank           &lt;dbl&gt; 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5…
-## $ institution          &lt;chr&gt; &quot;Harvard University&quot;, &quot;Harvard University&quot;, &quot;Harv…
+## $ world_rank           &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15…
+## $ institution          &lt;chr&gt; &quot;Harvard University&quot;, &quot;Massachusetts Institute of…
 ## $ country              &lt;chr&gt; &quot;United States&quot;, &quot;United States&quot;, &quot;United States&quot;…
-## $ national_rank        &lt;dbl&gt; 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 1, 1, 1, 1, 4…
-## $ quality_of_education &lt;dbl&gt; 7, 7, 7, 7, 9, 9, 9, 9, 17, 17, 17, 17, 10, 10, 1…
-## $ alumni_employment    &lt;dbl&gt; 9, 9, 9, 9, 17, 17, 17, 17, 11, 11, 11, 11, 24, 2…
-## $ quality_of_faculty   &lt;dbl&gt; 1, 1, 1, 1, 3, 3, 3, 3, 5, 5, 5, 5, 4, 4, 4, 4, 7…
-## $ publications         &lt;dbl&gt; 1, 1, 1, 1, 12, 12, 12, 12, 4, 4, 4, 4, 16, 16, 1…
-## $ influence            &lt;dbl&gt; 1, 1, 1, 1, 4, 4, 4, 4, 2, 2, 2, 2, 16, 16, 16, 1…
-## $ citations            &lt;dbl&gt; 1, 1, 1, 1, 4, 4, 4, 4, 2, 2, 2, 2, 11, 11, 11, 1…
+## $ national_rank        &lt;dbl&gt; 1, 2, 3, 1, 4, 5, 2, 6, 7, 8, 9, 10, 11, 1, 12, 1…
+## $ quality_of_education &lt;dbl&gt; 7, 9, 17, 10, 2, 8, 13, 14, 23, 16, 15, 21, 31, 3…
+## $ alumni_employment    &lt;dbl&gt; 9, 17, 11, 24, 29, 14, 28, 31, 21, 52, 26, 42, 16…
+## $ quality_of_faculty   &lt;dbl&gt; 1, 3, 5, 4, 7, 2, 9, 12, 10, 6, 8, 14, 24, 31, 20…
+## $ publications         &lt;dbl&gt; 1, 12, 4, 16, 37, 53, 15, 14, 13, 6, 34, 22, 9, 8…
+## $ influence            &lt;dbl&gt; 1, 4, 2, 16, 22, 33, 13, 6, 12, 5, 20, 21, 10, 19…
+## $ citations            &lt;dbl&gt; 1, 4, 2, 11, 22, 26, 19, 15, 14, 3, 28, 16, 8, 23…
 ## $ broad_impact         &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ patents              &lt;dbl&gt; 5, 5, 5, 5, 1, 1, 1, 1, 15, 15, 15, 15, 50, 50, 5…
-## $ year                 &lt;chr&gt; &quot;2012&quot;, &quot;2013&quot;, &quot;2014&quot;, &quot;2015&quot;, &quot;2012&quot;, &quot;2013&quot;, &quot;…
-## $ score                &lt;dbl&gt; 100.00, NA, NA, NA, 91.67, NA, NA, NA, 89.50, NA,…</code></pre>
+## $ patents              &lt;dbl&gt; 5, 1, 15, 50, 18, 101, 26, 66, 5, 16, 101, 10, 9,…
+## $ year                 &lt;chr&gt; &quot;2012&quot;, &quot;2012&quot;, &quot;2012&quot;, &quot;2012&quot;, &quot;2012&quot;, &quot;2012&quot;, &quot;…
+## $ score                &lt;dbl&gt; 100.00, 91.67, 89.50, 86.17, 85.21, 82.50, 82.34,…</code></pre>
 </div>
 <div id="joiningmerging" class="section level4">
 <h4>Joining/Merging</h4>
@@ -443,12 +443,12 @@ glimpse(college)</code></pre>
 ## $ `Dystopia Residual`             &lt;dbl&gt; 2.51011, 2.51011, 2.51011, 1.96994, 1.…
 ## $ academic_happiness_score        &lt;dbl&gt; 711.9000, 702.3605, 694.3873, 664.7943…</code></pre>
 <pre class="r"><code>joineddata %&gt;% group_by(country)%&gt;% summarize(mean=mean(academic_happiness_score,na.rm=T), sd= sd(academic_happiness_score,na.rm=T), n=n(), maxval=max(academic_happiness_score,na.rm=T), minval=min(academic_happiness_score,na.rm=T)) %&gt;% arrange(desc(mean)) %&gt;% gt() %&gt;% tab_header(title=&quot;Academic*Happiness Score across Countries&quot;)</code></pre>
-<div id="wrsdcfbriq" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="bbappubecy" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#wrsdcfbriq .gt_table {
+#bbappubecy .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -473,7 +473,7 @@ glimpse(college)</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#wrsdcfbriq .gt_heading {
+#bbappubecy .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -485,7 +485,7 @@ glimpse(college)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#wrsdcfbriq .gt_title {
+#bbappubecy .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -495,7 +495,7 @@ glimpse(college)</code></pre>
   border-bottom-width: 0;
 }
 
-#wrsdcfbriq .gt_subtitle {
+#bbappubecy .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -505,13 +505,13 @@ glimpse(college)</code></pre>
   border-top-width: 0;
 }
 
-#wrsdcfbriq .gt_bottom_border {
+#bbappubecy .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#wrsdcfbriq .gt_col_headings {
+#bbappubecy .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -526,7 +526,7 @@ glimpse(college)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#wrsdcfbriq .gt_col_heading {
+#bbappubecy .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -546,7 +546,7 @@ glimpse(college)</code></pre>
   overflow-x: hidden;
 }
 
-#wrsdcfbriq .gt_column_spanner_outer {
+#bbappubecy .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -558,15 +558,15 @@ glimpse(college)</code></pre>
   padding-right: 4px;
 }
 
-#wrsdcfbriq .gt_column_spanner_outer:first-child {
+#bbappubecy .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#wrsdcfbriq .gt_column_spanner_outer:last-child {
+#bbappubecy .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#wrsdcfbriq .gt_column_spanner {
+#bbappubecy .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -578,7 +578,7 @@ glimpse(college)</code></pre>
   width: 100%;
 }
 
-#wrsdcfbriq .gt_group_heading {
+#bbappubecy .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -600,7 +600,7 @@ glimpse(college)</code></pre>
   vertical-align: middle;
 }
 
-#wrsdcfbriq .gt_empty_group_heading {
+#bbappubecy .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -615,15 +615,15 @@ glimpse(college)</code></pre>
   vertical-align: middle;
 }
 
-#wrsdcfbriq .gt_from_md > :first-child {
+#bbappubecy .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#wrsdcfbriq .gt_from_md > :last-child {
+#bbappubecy .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#wrsdcfbriq .gt_row {
+#bbappubecy .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -642,7 +642,7 @@ glimpse(college)</code></pre>
   overflow-x: hidden;
 }
 
-#wrsdcfbriq .gt_stub {
+#bbappubecy .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -654,7 +654,7 @@ glimpse(college)</code></pre>
   padding-left: 12px;
 }
 
-#wrsdcfbriq .gt_summary_row {
+#bbappubecy .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -664,7 +664,7 @@ glimpse(college)</code></pre>
   padding-right: 5px;
 }
 
-#wrsdcfbriq .gt_first_summary_row {
+#bbappubecy .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -674,7 +674,7 @@ glimpse(college)</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#wrsdcfbriq .gt_grand_summary_row {
+#bbappubecy .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -684,7 +684,7 @@ glimpse(college)</code></pre>
   padding-right: 5px;
 }
 
-#wrsdcfbriq .gt_first_grand_summary_row {
+#bbappubecy .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -694,11 +694,11 @@ glimpse(college)</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#wrsdcfbriq .gt_striped {
+#bbappubecy .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#wrsdcfbriq .gt_table_body {
+#bbappubecy .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -707,7 +707,7 @@ glimpse(college)</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#wrsdcfbriq .gt_footnotes {
+#bbappubecy .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -721,13 +721,13 @@ glimpse(college)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#wrsdcfbriq .gt_footnote {
+#bbappubecy .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#wrsdcfbriq .gt_sourcenotes {
+#bbappubecy .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -741,41 +741,41 @@ glimpse(college)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#wrsdcfbriq .gt_sourcenote {
+#bbappubecy .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#wrsdcfbriq .gt_left {
+#bbappubecy .gt_left {
   text-align: left;
 }
 
-#wrsdcfbriq .gt_center {
+#bbappubecy .gt_center {
   text-align: center;
 }
 
-#wrsdcfbriq .gt_right {
+#bbappubecy .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#wrsdcfbriq .gt_font_normal {
+#bbappubecy .gt_font_normal {
   font-weight: normal;
 }
 
-#wrsdcfbriq .gt_font_bold {
+#bbappubecy .gt_font_bold {
   font-weight: bold;
 }
 
-#wrsdcfbriq .gt_font_italic {
+#bbappubecy .gt_font_italic {
   font-style: italic;
 }
 
-#wrsdcfbriq .gt_super {
+#bbappubecy .gt_super {
   font-size: 65%;
 }
 
-#wrsdcfbriq .gt_footnote_marks {
+#bbappubecy .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;

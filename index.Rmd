@@ -41,7 +41,7 @@ Both of these datasets are already tidy, therefore all I did here was untidy the
 college <- college %>% mutate(country=str_replace_all(country, "USA","United States"))
 glimpse(college)
 college_wide <- college %>% pivot_wider(names_from="year", values_from="score") %>% glimpse()
-college_long <- college_wide %>% pivot_longer(cols=starts_with('20'), names_to="year",values_to="score") %>% glimpse()
+college_long <- college_wide %>% pivot_longer(cols=starts_with('20'), names_to="year",values_to="score", values_drop_na=TRUE) %>% glimpse()
 ```
 
     
