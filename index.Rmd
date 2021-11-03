@@ -19,68 +19,98 @@ tidy=TRUE, tidy.opts=list(width.cutoff=60), R.options=list(max.print=100))
 
 ## Data Wrangling, Exploration, Visualization
 
-### Name and EID here
+### Mohamed Bettayeb, mb58422
 
 #### Introduction 
 
-Paragraph or two introducing your datasets and variables, why they are interesting to you, etc.
-
+The first dataset I chose was a set of data that observed different happiness levels across different countries. The variables of this dataset include the country, the region, the happiness rank relative to other countries, the overall happiness score, the standard error of that happiness score, and then the constitutes of this score (the gdp per capita, family life, life expectancy, trust in the government, generosity, and dystopia residual). The other dataset I chose involved the ranking of colleges across the world. This dataset included the variables of the institution name, the country it is located, the national rank of the institute, the year, the score, and the constitutes of this score which include the quality of the education, quality of the faculty, the number of publications, the number of citations, the broad impact, the rate of employment among alumni, the influence, and the number of patents. I chose these two datasets I thought it would be rather interesting to see if there was any sort of correlation between countries with more competitive schools and the overall happiness level of the country.
 ```{R}
-# read your datasets in here, e.g., with read_csv()
-
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(gt)
+happiness <- read_csv("2015.csv")
+college <- read_csv("cwurData.csv")
 ```
 
 #### Tidying: Reshaping
 
-If your datasets are tidy already, demonstrate that you can reshape data with pivot wider/longer here (e.g., untidy and then retidy). Alternatively, it may be easier to wait until the wrangling section so you can reshape your summary statistics. Note here if you are going to do this.
+Both of these datasets are already tidy, therefore all I did here was untidy them and then retidy them. However, I did also utilize str_replace_all to change the "USA" in the college dataset into "United States" in order to allow for easier joining in the next step.
 
 ```{R}
-# your tidying code (if applicable; can also wait until wrangling section)
+college <- college %>% mutate(country=str_replace_all(country, "USA","United States"))
+glimpse(college)
+college_wide <- college %>% pivot_wider(names_from="year", values_from="score") %>% glimpse()
+college_long <- college_wide %>% pivot_longer(cols=starts_with('20'), names_to="year",values_to="score") %>% glimpse()
 ```
 
     
 #### Joining/Merging
 
 ```{R}
-# your joining code
-
-# your joining code
+college <- college %>% filter(year=="2015") %>% glimpse()
+n_distinct(college$country)
+n_distinct(happiness$Country)
+joineddata <- inner_join(college, happiness, by=c("country"="Country")) %>% glimpse()
+n_distinct(joineddata$country)
+anti_join(college, happiness, by=c("country"="Country")) %>% glimpse()
+anti_join(happiness, college, by=c("Country"="country")) %>% glimpse()
 ```
 
-Discussions of joining here. Feel encouraged to break up into more than once code chunk and discuss each in turn.
+The college dataset contains 2200 different observations for 14 different variables. However, as this dataset contains data from different years and the happiness dataset only contains data from 2015, I chose to filter out any other year other 2015 from this dataset. This left the dataset with only 1000 observations for the 14 different variables. The happiness dataset contains 158 observations of 12 different variables. I joined the two datasets by country utilizing an inner join. I used an inner join as I only wished to see countries that contain both college data and happiness level data, as my biggest interest lies whether or not they have anything to do with each other. This yielded in a dataset with 998 observations of 26 variables, these 998 observations where made up of 57 unique countries that these two datasets have in common.. In the college dataset there existed 59 unique countries, while in the happiness dataset there was 158 unique countries. Two countries appear in the college dataset but not in the happiness dataset and they are the Slovak Republic and Puerto Rico. However 101 countries do not appear in the college dataset but do appear in the happiness dataset.
 
 ####  Wrangling
 
 ```{R}
-# your wrangling code
-
-# your wrangling code
-
-# your wrangling code
+joineddata <- joineddata %>% mutate(academic_happiness_score = score * `Happiness Score`) %>% glimpse()
+joineddata %>% group_by(country)%>% summarize(mean=mean(academic_happiness_score,na.rm=T), sd= sd(academic_happiness_score,na.rm=T), n=n(), maxval=max(academic_happiness_score,na.rm=T), minval=min(academic_happiness_score,na.rm=T)) %>% arrange(desc(mean)) %>% gt() %>% tab_header(title="Academic*Happiness Score across Countries")
 ```
 
-Your discussion of wrangling section here. Feel encouraged to break up into more than once code chunk and discuss each in turn.
+In this section, I used mutate() to create a new function of the two scores (happiness and college quality) and called this the academic_happiness_score. I chose to multiply the two scores into this value to allow the happiness level to play a larger part in the new function, as if I had simply added the two values the happiness level would have been insignificant. I then performed a 5-function summary for this specific variable and then piped into a gt(). This data is useful in showing which countries had the "best" overall system in respect to happiness and academics. Moreover, this function can be used to compare the "top 10s" of each different variable. For example, finding certain countries in the top 10 of this function but not in the top 10 of the "happiness score" or "academic score" could mean that the two values are not connected. However if the same countries are consistently popping up in the top 10s, then there likely could be a coorelation between the happiness value and the academic value.
 
+```{R}
+joineddata %>% group_by(institution) %>% summarize(n=n()) %>% arrange(desc(n))
+```
+
+As the institution is technically a categorical variable, this is the number of counts per level for this variable.
+
+```{R}
+joineddata %>% group_by(country)%>%summarize(mean=mean(quality_of_education ,na.rm=T), sd= sd(quality_of_education,na.rm=T), n=n(), maxval=max(quality_of_education,na.rm=T), minval=min(quality_of_education,na.rm=T)) %>% arrange(desc(mean))
+joineddata %>% group_by(country)%>%summarize(mean=mean(alumni_employment ,na.rm=T), sd= sd(alumni_employment,na.rm=T), n=n(), maxval=max(alumni_employment,na.rm=T), minval=min(alumni_employment,na.rm=T)) %>% arrange(desc(mean))
+joineddata %>% group_by(country)%>%summarize(mean=mean(quality_of_faculty ,na.rm=T), sd= sd(quality_of_faculty,na.rm=T), n=n(), maxval=max(quality_of_faculty,na.rm=T), minval=min(quality_of_faculty,na.rm=T)) %>% arrange(desc(mean))
+joineddata %>% group_by(country)%>%summarize(mean=mean(score ,na.rm=T), sd= sd(score,na.rm=T), n=n(), maxval=max(score,na.rm=T), minval=min(score,na.rm=T)) %>% arrange(desc(mean))
+joineddata %>% group_by(country)%>%summarize(mean=mean(`Happiness Score` ,na.rm=T), sd= sd(`Happiness Score`,na.rm=T), n=n(), maxval=max(`Happiness Score`,na.rm=T), minval=min(`Happiness Score`,na.rm=T)) %>% arrange(desc(mean))
+joineddata %>% group_by(country)%>%summarize(mean=mean(Family ,na.rm=T), sd= sd(Family,na.rm=T), n=n(), maxval=max(Family,na.rm=T), minval=min(Family,na.rm=T)) %>% arrange(desc(mean))
+joineddata %>% group_by(country)%>%summarize(mean=mean(Freedom ,na.rm=T), sd= sd(Freedom,na.rm=T), n=n(), maxval=max(Freedom,na.rm=T), minval=min(Freedom,na.rm=T)) %>% arrange(desc(mean))
+joineddata %>% group_by(country)%>%summarize(mean=mean(`Health (Life Expectancy)` ,na.rm=T), sd= sd(`Health (Life Expectancy)`,na.rm=T), n=n(), maxval=max(`Health (Life Expectancy)`,na.rm=T), minval=min(`Health (Life Expectancy)`,na.rm=T)) %>% arrange(desc(mean))
+joineddata %>% group_by(country)%>%summarize(mean=mean(Generosity ,na.rm=T), sd= sd(Generosity,na.rm=T), n=n(), maxval=max(Generosity,na.rm=T), minval=min(Generosity,na.rm=T)) %>% arrange(desc(mean))
+joineddata %>% group_by(country)%>%summarize(mean=mean(publications ,na.rm=T), sd= sd(publications,na.rm=T), n=n(), maxval=max(publications,na.rm=T), minval=min(publications,na.rm=T)) %>% arrange(desc(mean))
+
+```
+
+As my joined dataset contains 26 variables, I chose to do a 5-function summary on these 10 variables. After observing the data, I found that there was not a significant enough trend to determine whether or not these two values were significantly correlated. For example, states like the United States and Singapore are well within the top 10 in academic value but they aren't found on the top 10 of happiness level. One very interesting observation was that many of the northern European countries are actually found on both top 10s. Denmark, the Netherlands, Switzerland, and Sweden are found on both top 10s, with Switzerland at the number 1 spot for the happiness value. Another interesting observation was that these countries were also rated high the Freedom variable, but not necessarily in the Health variable. Another important mention is that it was difficult to ascertain which countries did the best in other variables due to the dataset often giving more than 10 countries the highest rating for that specific variable.
 
 #### Visualizing
 
 ```{R}
-# your plot 1
+joineddata %>% ggplot(aes(x=`Happiness Score`,y=score, color=country))+geom_point(stat="summary",fun=mean, aes(size=2)) + labs(title="Happiness Score vs Academic Score across Countries")+theme(panel.border = element_rect(linetype = "dashed", fill = NA)) + scale_x_continuous(limits = c(3,8),breaks= seq(3,8,1))
 ```
 
-Your discussion of plot 1
+This plot provides a summary comparison of the happiness value when compared to the academic value across different countries. The plot's theme was changed slightly and the scaling was shifted to provide a closer look at the values. The plot follows a very rough positively linear relationship. Which seems to indicate that the higher the mean happiness value for a country, the higher the academic value for a country as well.
 
 ```{R}
-# your plot 2
+top10<-joineddata %>% group_by(country) %>% summarize(mean=mean(score,na.rm=T), sd=sd(score, na.rm=T), n=n(), se=sd/sqrt(n)) %>% arrange(desc(mean))%>% slice(1:10)
+top10 %>% ggplot(aes(x=country,y=mean))+geom_bar(stat="identity") + geom_errorbar(aes(ymin=mean-se, ymax=mean+se, width=.1, color="red")) + labs(title="The top 10 Academic Scores Across Countries")+theme(panel.border = element_rect(linetype = "dashed", fill = NA)) + scale_y_continuous(limits = c(0,55),breaks= seq(0,60,5))
 ```
 
-Your discussion of plot 2
+This plot visually expresses some of the data presented previously in the summary section. This compares the academic values across the top 10 countries (limited to top 10 for purposes of readability) with the standard error bars. I found it rather interesting that nearly none of these values were significantly different from one another, apart from perhaps Singapore and Canada. Moreover, while this top 10 seems extremely similar to the top 10 of the next plot, this similarity makes any sort of discrepancy between the two all the more glaring.
 
 ```{R}
-# your plot 3
+top10_combined<-joineddata %>% group_by(country) %>% summarize(mean=mean(academic_happiness_score,na.rm=T), sd=sd(academic_happiness_score,na.rm=T), n=n(), se=sd/sqrt(n)) %>% arrange(desc(mean))%>% slice(1:10)
+top10_combined %>% ggplot(aes(x=country,y=mean))+geom_bar(stat="identity") +geom_errorbar(aes(ymin=mean-se, ymax=mean+se, width=.1, color="red"))+ labs(title="The top 10 Academic*Happiness Scores Across Countries")+theme(panel.border = element_rect(linetype = "dashed", fill = NA))+scale_y_continuous(limits = c(0,400),breaks= seq(0,400,25))
 ```
 
-Your discussion of plot 3
+As discussed with the previous plot, this plot provides a visual representation of data already somewhat expressed in the summary section, with the addition of standard error bars (except for Iceland). The absence of Russia and the presence of Iceland provides information about these two countries. Given that the previous plot only looked at academic values, it is safe to say that Russsia has a very high academic value but a relatively low happiness value. Furthermore, since Iceland is not in the top 10 of the previous plot, it is safe to say that it's happiness level is higher that most other countries and allowed it to make it into the top 10 of this variable. This is to say, that given the linear trend seen in the first plot that these two countries could be considered outliers (as Russia has a low happiness value but a high academic value, and Iceland has the inverse of that.)
 
 #### Concluding Remarks
 
